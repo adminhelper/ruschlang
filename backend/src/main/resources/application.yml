@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/ruschlang?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: ruschlang_root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+naver:
+  search:
+    client-id: ${NAVER_SEARCH_CLIENT_ID:o7Mh1cJ6e14Gcx1q0YEi}
+    client-secret: ${NAVER_SEARCH_CLIENT_SECRET:iwJ2zNEWf4}
