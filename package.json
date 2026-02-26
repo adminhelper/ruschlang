@@ -1,0 +1,16 @@
+{
+  "name": "ruschlang",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "smoke": "bun run scripts/smoke-guest-check.mjs",
+    "test:e2e": "bunx playwright test",
+    "test:playwright": "bun run test:e2e",
+    "test": "bun run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.54.0",
+    "playwright": "1.54.0"
+  }
+}

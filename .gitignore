@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Build artifacts
+backend/build/
+backend/bin/
+backend/.gradle/
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings/
+
+# Environment files (secrets)
+server/.env
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Vim swap files
+.*.sw?
+
+# Screenshots (test artifacts)
+*.png
+
+# Agent work directory
+.sisyphus/
+
+# Test artifacts
+test-results/
+playwright.config.js
+playwright-report/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
