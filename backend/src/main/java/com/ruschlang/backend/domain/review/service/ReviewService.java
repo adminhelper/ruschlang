@@ -7,18 +7,29 @@ import com.ruschlang.backend.domain.review.dto.ReviewResponse;
 import com.ruschlang.backend.domain.review.entity.Review;
 import com.ruschlang.backend.domain.review.repository.ReviewRepository;
 import com.ruschlang.backend.global.exception.BusinessException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
+
+    public ReviewService(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository) {
+        this.reviewRepository = reviewRepository;
+        this.restaurantRepository = restaurantRepository;
+    }
+
+    public List<ReviewResponse> findByRestaurantId(String restaurantId) {
+        return reviewRepository.findByRestaurantIdOrderByCreatedAtDesc(restaurantId).stream()
+            .map(ReviewResponse::from)
+            .toList();
+    }
 
     @Transactional
     public ReviewResponse addReview(String restaurantId, ReviewCreateRequest request) {
@@ -27,13 +38,13 @@ public class ReviewService {
 
         String reviewerName = (request.name() == null || request.name().isBlank()) ? "익명" : request.name();
 
-        Review review = Review.builder()
-            .restaurant(restaurant)
-            .reviewerName(reviewerName)
-            .rating(request.rating())
-            .note(request.note())
-            .photoUrl(request.photoUrl())
-            .build();
+        Review review = new Review(
+            restaurant,
+            reviewerName,
+            request.rating(),
+            request.note(),
+            request.photoUrl()
+        );
 
         Review saved = reviewRepository.save(review);
         return ReviewResponse.from(saved);

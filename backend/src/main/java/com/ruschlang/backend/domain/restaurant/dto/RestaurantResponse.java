@@ -4,6 +4,7 @@ import com.ruschlang.backend.domain.restaurant.entity.Restaurant;
 import com.ruschlang.backend.domain.review.dto.ReviewResponse;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public record RestaurantResponse(
@@ -19,10 +20,10 @@ public record RestaurantResponse(
     List<ReviewResponse> reviews
 ) {
     public static RestaurantResponse from(Restaurant entity) {
-        List<ReviewResponse> reviewResponses = entity.getReviews().stream()
-            .map(ReviewResponse::from)
-            .toList();
+        return from(entity, Collections.emptyList());
+    }
 
+    public static RestaurantResponse from(Restaurant entity, List<ReviewResponse> reviews) {
         return new RestaurantResponse(
             entity.getId(),
             entity.getName(),
@@ -33,7 +34,7 @@ public record RestaurantResponse(
             entity.getPhotoUrl() != null ? entity.getPhotoUrl() : "",
             entity.getCreatedAt(),
             entity.getUpdatedAt(),
-            reviewResponses
+            reviews
         );
     }
 }

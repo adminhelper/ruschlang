@@ -4,6 +4,8 @@ import com.ruschlang.backend.domain.roadmap.dto.RoadmapCreateRequest;
 import com.ruschlang.backend.domain.roadmap.dto.RoadmapRateRequest;
 import com.ruschlang.backend.domain.roadmap.dto.RoadmapResponse;
 import com.ruschlang.backend.domain.roadmap.service.RoadmapService;
+import com.ruschlang.backend.global.common.AdminOnly;
+import com.ruschlang.backend.global.common.MemberRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,22 +27,26 @@ public class RoadmapController {
     }
 
     @PostMapping
+    @MemberRequired
     public ResponseEntity<RoadmapResponse> create(@Valid @RequestBody RoadmapCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roadmapService.create(request));
     }
 
     @PutMapping("/{id}")
+    @AdminOnly
     public ResponseEntity<RoadmapResponse> update(@PathVariable String id, @Valid @RequestBody RoadmapCreateRequest request) {
         return ResponseEntity.ok(roadmapService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @AdminOnly
     public ResponseEntity<Void> delete(@PathVariable String id) {
         roadmapService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/rate")
+    @MemberRequired
     public ResponseEntity<RoadmapResponse> rate(@PathVariable String id, @Valid @RequestBody RoadmapRateRequest request) {
         return ResponseEntity.ok(roadmapService.rate(id, request));
     }

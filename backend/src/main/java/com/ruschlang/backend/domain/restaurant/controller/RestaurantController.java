@@ -3,6 +3,7 @@ package com.ruschlang.backend.domain.restaurant.controller;
 import com.ruschlang.backend.domain.restaurant.dto.RestaurantCreateRequest;
 import com.ruschlang.backend.domain.restaurant.dto.RestaurantResponse;
 import com.ruschlang.backend.domain.restaurant.service.RestaurantService;
+import com.ruschlang.backend.global.common.AdminOnly;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,13 @@ public class RestaurantController {
     }
 
     @PostMapping
+    @AdminOnly
     public ResponseEntity<RestaurantResponse> create(@Valid @RequestBody RestaurantCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.create(request));
     }
 
     @DeleteMapping("/{id}")
+    @AdminOnly
     public ResponseEntity<Void> delete(@PathVariable String id) {
         restaurantService.delete(id);
         return ResponseEntity.noContent().build();

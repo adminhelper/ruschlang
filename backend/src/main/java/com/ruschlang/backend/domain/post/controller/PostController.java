@@ -5,6 +5,8 @@ import com.ruschlang.backend.domain.post.dto.CommentResponse;
 import com.ruschlang.backend.domain.post.dto.PostCreateRequest;
 import com.ruschlang.backend.domain.post.dto.PostResponse;
 import com.ruschlang.backend.domain.post.service.PostService;
+import com.ruschlang.backend.global.common.AdminOnly;
+import com.ruschlang.backend.global.common.MemberRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ public class PostController {
     }
 
     @PostMapping
+    @MemberRequired
     public ResponseEntity<PostResponse> create(
         @RequestHeader(value = "x-user-role", defaultValue = "guest") String role,
         @Valid @RequestBody PostCreateRequest request
@@ -38,17 +41,20 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
+    @AdminOnly
     public ResponseEntity<PostResponse> update(@PathVariable String id, @Valid @RequestBody PostCreateRequest request) {
         return ResponseEntity.ok(postService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @AdminOnly
     public ResponseEntity<Void> delete(@PathVariable String id) {
         postService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/approve")
+    @AdminOnly
     public ResponseEntity<PostResponse> approve(@PathVariable String id, @RequestBody Map<String, String> body) {
         String status = body.getOrDefault("status", "");
         return ResponseEntity.ok(postService.approve(id, status));
@@ -60,6 +66,7 @@ public class PostController {
     }
 
     @PostMapping("/{id}/comments")
+    @MemberRequired
     public ResponseEntity<CommentResponse> addComment(
         @PathVariable String id,
         @RequestHeader(value = "x-user-role", defaultValue = "guest") String role,
