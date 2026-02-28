@@ -21,17 +21,26 @@ jobs:
       - name: 소스 체크아웃
         uses: actions/checkout@v4
 
-      - name: 프론트엔드 정적 파일 준비
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: React 프론트엔드 빌드
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || '' }}
+          GITHUB_PAGES: 'true'
         run: |
-          mkdir -p _site
-          cp index.html _site/
-          cp styles.css _site/
-          cp app.js _site/
+          npm ci
+          npm run build
 
       - name: GitHub Pages 아티팩트 업로드
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '_site'
+          path: 'frontend/dist'
 
   deploy:
     environment:
