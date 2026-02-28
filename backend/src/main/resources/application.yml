@@ -20,3 +20,8 @@ naver:
   search:
     client-id: ${NAVER_SEARCH_CLIENT_ID:o7Mh1cJ6e14Gcx1q0YEi}
     client-secret: ${NAVER_SEARCH_CLIENT_SECRET:iwJ2zNEWf4}
+  map:
+    client-id: ${NAVER_MAP_CLIENT_ID:y5qx5vsnsj}
+
+admin:
+  token: ${ADMIN_TOKEN:change-me-admin-token}

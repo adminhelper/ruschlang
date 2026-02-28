@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Value("${admin.token:}")
+    @Value("${admin.token:change-me-admin-token}")
     private String adminToken;
 
     public boolean isValidAdminToken(String token) {
