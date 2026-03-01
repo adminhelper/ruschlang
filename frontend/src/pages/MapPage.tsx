@@ -164,20 +164,27 @@ export function MapPage() {
       });
 
       const infoWindow = new window.naver.maps.InfoWindow({
-        content: `<div style="padding:10px;font-family:Jua,sans-serif;min-width:150px">
-          <strong>${r.name}</strong><br/>
-          <span style="font-size:12px;color:#666">${r.address}</span><br/>
-          <span style="color:#f59e0b">★</span> ${rating > 0 ? rating.toFixed(1) : '-'}
-          <span style="font-size:11px;color:#999">(${reviewCount})</span>
+        content: `<div style="padding:14px;font-family:Pretendard,sans-serif;min-width:200px;max-width:280px">
+          <strong style="font-size:15px;color:#191f28">${r.name}</strong>
+          <p style="font-size:12px;color:#8b95a1;margin:4px 0 6px">${r.address}</p>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="color:#f59e0b;font-size:14px">★</span>
+            <span style="font-size:13px;color:#191f28;font-weight:600">${rating > 0 ? rating.toFixed(1) : '-'}</span>
+            <span style="font-size:11px;color:#8b95a1">(리뷰 ${reviewCount}개)</span>
+          </div>
         </div>`,
       });
 
       window.naver.maps.Event.addListener(marker, 'click', () => {
-        if (infoWindow.getMap()) {
-          infoWindow.close();
-        } else {
-          infoWindow.open(mapInstance.current, marker);
-        }
+        // 기존 InfoWindow 닫기
+        restaurantMarkersRef.current.forEach(({ infoWindow: iw }) => iw.close());
+
+        // 해당 마커로 줌인 + 중앙 정렬
+        mapInstance.current?.setCenter(new window.naver.maps.LatLng(r.lat, r.lng));
+        mapInstance.current?.setZoom(16);
+
+        // InfoWindow 열기
+        infoWindow.open(mapInstance.current, marker);
       });
 
       restaurantMarkersRef.current.push({

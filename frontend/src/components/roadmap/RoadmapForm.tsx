@@ -58,7 +58,7 @@ export function RoadmapForm({ initialData, onSubmit, onCancel }: Props) {
             <button
               type="button"
               onClick={() => setShowSearch(true)}
-              className="px-3 py-1 bg-primary text-white rounded text-xs font-sans"
+              className="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-sans font-bold hover:bg-primary-dark transition-colors"
             >
               + 맛집 검색
             </button>
