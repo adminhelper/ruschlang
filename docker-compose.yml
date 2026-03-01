@@ -32,6 +32,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ruschlang?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ruschlang_root
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me-admin-token}
+      NAVER_SEARCH_CLIENT_ID: ${NAVER_SEARCH_CLIENT_ID:-o7Mh1cJ6e14Gcx1q0YEi}
+      NAVER_SEARCH_CLIENT_SECRET: ${NAVER_SEARCH_CLIENT_SECRET:-iwJ2zNEWf4}
+      NAVER_MAP_CLIENT_ID: ${NAVER_MAP_CLIENT_ID:-y5qx5vsnsj}
 
 volumes:
   mysql_data:

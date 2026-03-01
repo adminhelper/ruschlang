@@ -5,6 +5,7 @@ import com.ruschlang.backend.domain.post.entity.Post;
 import com.ruschlang.backend.domain.post.entity.PostComment;
 import com.ruschlang.backend.domain.post.repository.PostCommentRepository;
 import com.ruschlang.backend.domain.post.repository.PostRepository;
+import com.ruschlang.backend.global.common.XssUtils;
 import com.ruschlang.backend.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,13 +57,16 @@ public class PostService {
         String author = (request.author() == null || request.author().isBlank())
             ? ("admin".equals(role) ? "관리자" : "익명")
             : request.author();
+        String sanitizedTitle = XssUtils.sanitize(request.title());
+        String sanitizedAuthor = XssUtils.sanitize(author);
+        String sanitizedContent = XssUtils.sanitize(request.content());
         String status = "admin".equals(role) ? "approved" : "pending";
 
         Post post = Post.builder()
-            .title(request.title())
-            .author(author)
+            .title(sanitizedTitle)
+            .author(sanitizedAuthor)
             .authorRole(role)
-            .content(request.content())
+            .content(sanitizedContent)
             .lat(request.lat())
             .lng(request.lng())
             .address(request.address())
@@ -91,6 +95,10 @@ public class PostService {
 
     @Transactional
     public PostResponse approve(String id, String status) {
+        if (!"approved".equals(status) && !"rejected".equals(status)) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "상태값은 approved 또는 rejected만 가능합니다");
+        }
+
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "대상 게시글이 없습니다."));
 
@@ -126,12 +134,14 @@ public class PostService {
         String author = (request.author() == null || request.author().isBlank())
             ? ("admin".equals(role) ? "관리자" : "익명")
             : request.author();
+        String sanitizedAuthor = XssUtils.sanitize(author);
+        String sanitizedContent = XssUtils.sanitize(request.content());
 
         PostComment comment = PostComment.builder()
             .post(post)
             .parentCommentId(request.parentCommentId())
-            .author(author)
-            .content(request.content())
+            .author(sanitizedAuthor)
+            .content(sanitizedContent)
             .build();
 
         PostComment saved = postCommentRepository.save(comment);

@@ -6,6 +6,7 @@ import com.ruschlang.backend.domain.review.dto.ReviewCreateRequest;
 import com.ruschlang.backend.domain.review.dto.ReviewResponse;
 import com.ruschlang.backend.domain.review.entity.Review;
 import com.ruschlang.backend.domain.review.repository.ReviewRepository;
+import com.ruschlang.backend.global.common.XssUtils;
 import com.ruschlang.backend.global.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,12 +38,14 @@ public class ReviewService {
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "해당 맛집이 없습니다."));
 
         String reviewerName = (request.name() == null || request.name().isBlank()) ? "익명" : request.name();
+        String sanitizedReviewerName = XssUtils.sanitize(reviewerName);
+        String sanitizedNote = XssUtils.sanitize(request.note());
 
         Review review = new Review(
             restaurant,
-            reviewerName,
+            sanitizedReviewerName,
             request.rating(),
-            request.note(),
+            sanitizedNote,
             request.photoUrl()
         );
 

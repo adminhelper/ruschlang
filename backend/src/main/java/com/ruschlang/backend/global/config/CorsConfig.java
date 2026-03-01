@@ -19,7 +19,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedOriginPatterns("http://localhost:*", "https://*.github.io")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
+            .allowedHeaders("Content-Type", "x-admin-token", "x-user-role", "x-user-nickname")
             .allowCredentials(true)
             .maxAge(3600);
     }

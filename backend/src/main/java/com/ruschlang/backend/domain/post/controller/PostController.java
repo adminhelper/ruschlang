@@ -1,5 +1,6 @@
 package com.ruschlang.backend.domain.post.controller;
 
+import com.ruschlang.backend.domain.post.dto.ApproveRequest;
 import com.ruschlang.backend.domain.post.dto.CommentCreateRequest;
 import com.ruschlang.backend.domain.post.dto.CommentResponse;
 import com.ruschlang.backend.domain.post.dto.PostCreateRequest;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -55,9 +55,8 @@ public class PostController {
 
     @PatchMapping("/{id}/approve")
     @AdminOnly
-    public ResponseEntity<PostResponse> approve(@PathVariable String id, @RequestBody Map<String, String> body) {
-        String status = body.getOrDefault("status", "");
-        return ResponseEntity.ok(postService.approve(id, status));
+    public ResponseEntity<PostResponse> approve(@PathVariable String id, @Valid @RequestBody ApproveRequest request) {
+        return ResponseEntity.ok(postService.approve(id, request.status()));
     }
 
     @GetMapping("/{id}/comments")

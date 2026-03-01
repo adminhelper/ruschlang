@@ -47,6 +47,14 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         if (memberRequired != null) {
             String headerRole = request.getHeader("x-user-role");
             String role = headerRole == null ? "" : headerRole.trim().toLowerCase();
+
+            if ("admin".equals(role)) {
+                String token = request.getHeader("x-admin-token");
+                if (!authService.isValidAdminToken(token)) {
+                    role = "guest";
+                }
+            }
+
             if (!"member".equals(role) && !"admin".equals(role)) {
                 writeJson(response, HttpStatus.FORBIDDEN, Map.of(
                     "error", "Forbidden",

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import type { AuthState } from '../types/auth';
 import {
   ADMIN_SESSION_KEY, MEMBER_SESSION_KEY,
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuth({ role: 'guest', nickname: '', adminToken: '' });
   }, []);
 
-  const value: AuthContextValue = {
+  const value = useMemo<AuthContextValue>(() => ({
     ...auth,
     isAdmin: auth.role === 'admin',
     isMember: auth.role === 'member',
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loginAdmin,
     loginMember,
     logout,
-  };
+  }), [auth, loginAdmin, loginMember, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

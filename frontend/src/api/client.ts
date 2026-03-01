@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const DEFAULT_TIMEOUT_MS = 10_000;
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
@@ -66,18 +67,35 @@ async function request<T>(path: string, options: FetchOptions = {}): Promise<T> 
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, { ...fetchOptions, headers });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new ApiError(response.status, text || `요청 실패 (${response.status})`);
-  }
+  try {
+    const response = await fetch(url, {
+      ...fetchOptions,
+      headers,
+      signal: fetchOptions.signal ?? controller.signal,
+    });
 
-  const contentType = response.headers.get('content-type');
-  if (contentType?.includes('application/json')) {
-    return response.json();
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      throw new ApiError(response.status, text || `요청 실패 (${response.status})`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      return response.json();
+    }
+    return response.text() as unknown as T;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError(408, '요청 시간이 초과되었습니다.');
+    }
+    throw new ApiError(0, '네트워크 연결을 확인해주세요.');
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return response.text() as unknown as T;
 }
 
 export const api = {

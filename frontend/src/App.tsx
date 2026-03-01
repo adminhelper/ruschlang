@@ -7,6 +7,7 @@ import { MapPage } from './pages/MapPage';
 import { ExplorePage } from './pages/ExplorePage';
 import { RoadmapListPage } from './pages/RoadmapListPage';
 import { PostListPage } from './pages/PostListPage';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 export default function App() {
   return (
@@ -17,13 +18,15 @@ export default function App() {
             <Header />
             <TabBar />
             <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<MapPage />} />
-                <Route path="/explore" element={<ExplorePage />} />
-                <Route path="/roadmaps" element={<RoadmapListPage />} />
-                <Route path="/posts" element={<PostListPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<MapPage />} />
+                  <Route path="/explore" element={<ExplorePage />} />
+                  <Route path="/roadmaps" element={<RoadmapListPage />} />
+                  <Route path="/posts" element={<PostListPage />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </ErrorBoundary>
             </main>
           </div>
         </ToastProvider>
