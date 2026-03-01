@@ -1,21 +1,115 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { getMapConfig } from '../../api/map';
 import type { RestaurantCreateRequest } from '../../types/restaurant';
-import { FOOD_CATEGORY_OPTIONS, REGION_OPTIONS } from '../../utils/mapFilters';
+import { resizePhoto } from '../../utils/photo';
 
 interface Props {
   onSubmit: (data: RestaurantCreateRequest) => void;
 }
 
 export function RestaurantForm({ onSubmit }: Props) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const miniMapInstance = useRef<any>(null);
+  const tempMarkerRef = useRef<any>(null);
+  const clickListenerRef = useRef<any>(null);
   const [form, setForm] = useState<RestaurantCreateRequest>({
     name: '', address: '', lat: 0, lng: 0,
-    category: '', region: '', phone: '', description: '', photo: '',
+    description: '', photoUrl: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let cancelled = false;
+
+    const initialize = async () => {
+      try {
+        const config = await getMapConfig();
+        if (cancelled || !config.clientId) return;
+
+        const initMap = () => {
+          if (cancelled || !mapRef.current || !window.naver) return;
+
+          const map = new window.naver.maps.Map(mapRef.current, {
+            center: new window.naver.maps.LatLng(37.5665, 126.978),
+            zoom: 13,
+            zoomControl: true,
+          });
+
+          miniMapInstance.current = map;
+          clickListenerRef.current = window.naver.maps.Event.addListener(map, 'click', (e: any) => {
+            const lat = e.coord.lat();
+            const lng = e.coord.lng();
+
+            setForm(prev => ({
+              ...prev,
+              lat,
+              lng,
+            }));
+
+            if (tempMarkerRef.current) {
+              tempMarkerRef.current.setMap(null);
+              tempMarkerRef.current = null;
+            }
+
+            const marker = new window.naver.maps.Marker({
+              position: new window.naver.maps.LatLng(lat, lng),
+              map,
+              title: '선택한 좌표',
+            });
+            tempMarkerRef.current = marker;
+
+            window.setTimeout(() => {
+              if (tempMarkerRef.current === marker) {
+                marker.setMap(null);
+                tempMarkerRef.current = null;
+              }
+            }, 1500);
+          });
+        };
+
+        if (window.naver) {
+          initMap();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${config.clientId}&submodules=geocoder`;
+        script.onload = initMap;
+        document.head.appendChild(script);
+      } catch {
+        return;
+      }
+    };
+
+    initialize();
+
+    return () => {
+      cancelled = true;
+      if (clickListenerRef.current && window.naver) {
+        window.naver.maps.Event.removeListener(clickListenerRef.current);
+      }
+      if (tempMarkerRef.current) {
+        tempMarkerRef.current.setMap(null);
+        tempMarkerRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.name.trim() || !form.address.trim()) return;
     onSubmit(form);
+  };
+
+  const handlePhotoChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const photoUrl = await resizePhoto(file);
+      setForm({ ...form, photoUrl });
+    } catch {
+      setForm({ ...form, photoUrl: '' });
+    }
   };
 
   return (
@@ -37,28 +131,9 @@ export function RestaurantForm({ onSubmit }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <select
-          value={form.category}
-          onChange={e => setForm({ ...form, category: e.target.value })}
-          className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
-        >
-          <option value="">음식종류</option>
-          {FOOD_CATEGORY_OPTIONS.filter(o => o !== '음식종류 전체').map(o => <option key={o}>{o}</option>)}
-        </select>
-        <select
-          value={form.region}
-          onChange={e => setForm({ ...form, region: e.target.value })}
-          className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
-        >
-          <option value="">지역</option>
-          {REGION_OPTIONS.filter(o => o !== '지역 전체').map(o => <option key={o}>{o}</option>)}
-        </select>
-        <input
-          type="tel" placeholder="전화번호" value={form.phone}
-          onChange={e => setForm({ ...form, phone: e.target.value })}
-          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none"
-        />
+      <div className="space-y-2">
+        <p className="text-xs text-text-muted">지도를 클릭하면 위도/경도가 자동 입력됩니다.</p>
+        <div ref={mapRef} className="w-full h-48 rounded-lg border border-border bg-gray-100" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -80,6 +155,18 @@ export function RestaurantForm({ onSubmit }: Props) {
         className="w-full px-3 py-2 border border-border rounded-lg text-sm resize-none h-20 focus:ring-2 focus:ring-primary/30 focus:outline-none"
       />
 
+      <div className="space-y-2">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoChange}
+          className="w-full text-xs text-text-muted file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-gray-100 file:text-text"
+        />
+        {form.photoUrl && (
+          <img src={form.photoUrl} alt="맛집 사진 미리보기" className="w-full h-36 object-cover rounded-lg border border-border" />
+        )}
+      </div>
+
       <button
         type="submit"
         className="w-full py-2 bg-primary text-white rounded-lg text-sm font-sans font-bold hover:bg-primary-dark transition-colors"
@@ -88,4 +175,10 @@ export function RestaurantForm({ onSubmit }: Props) {
       </button>
     </form>
   );
+}
+
+declare global {
+  interface Window {
+    naver: any;
+  }
 }
