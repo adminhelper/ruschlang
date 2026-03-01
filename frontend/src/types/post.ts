@@ -4,12 +4,11 @@ export interface Post {
   author: string;
   authorRole: UserRole;
   content: string;
-  photo: string;
-  locationName: string;
-  locationLat: number | null;
-  locationLng: number | null;
+  placeName: string;
+  lat: number | null;
+  lng: number | null;
+  address: string;
   rating: number | null;
-  ruschlangGrade: string;
   status: PostStatus;
   createdAt: string;
   updatedAt: string;
@@ -32,12 +31,11 @@ export interface CommentNode extends PostComment {
 export interface PostCreateRequest {
   title: string;
   author: string;
-  authorRole: string;
   content: string;
-  photo?: string;
-  locationName?: string;
-  locationLat?: number;
-  locationLng?: number;
+  placeName: string;
+  lat: number;
+  lng: number;
+  address: string;
   rating?: number;
 }
 
