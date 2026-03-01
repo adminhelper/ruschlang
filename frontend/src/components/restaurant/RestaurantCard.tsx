@@ -28,7 +28,7 @@ export const RestaurantCard = memo(function RestaurantCard({ restaurant: r, onDe
     : r.description;
 
   return (
-    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-surface rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {isGuest ? (
         <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>
       ) : (

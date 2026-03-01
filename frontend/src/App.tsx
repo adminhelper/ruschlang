@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Header } from './components/layout/Header';
 import { TabBar } from './components/layout/TabBar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -25,6 +26,7 @@ export default function App() {
   return (
     <HashRouter>
       <AuthProvider>
+        <ThemeProvider>
         <ToastProvider>
           <div className="min-h-screen flex flex-col bg-surface-dark">
             <Header />
@@ -44,6 +46,7 @@ export default function App() {
             </main>
           </div>
         </ToastProvider>
+        </ThemeProvider>
       </AuthProvider>
     </HashRouter>
   );

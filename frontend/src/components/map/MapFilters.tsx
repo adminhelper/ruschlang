@@ -20,7 +20,7 @@ export function MapFilters({ filters, onChange, onSearch }: Props) {
       <select
         value={filters.region}
         onChange={e => onChange({ ...filters, region: e.target.value })}
-        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary/30 focus:outline-none"
+        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-surface text-text focus:ring-2 focus:ring-primary/30 focus:outline-none"
       >
         {REGION_OPTIONS.map(o => <option key={o}>{o}</option>)}
       </select>
@@ -28,7 +28,7 @@ export function MapFilters({ filters, onChange, onSearch }: Props) {
       <select
         value={filters.food}
         onChange={e => onChange({ ...filters, food: e.target.value })}
-        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary/30 focus:outline-none"
+        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-surface text-text focus:ring-2 focus:ring-primary/30 focus:outline-none"
       >
         {FOOD_CATEGORY_OPTIONS.map(o => <option key={o}>{o}</option>)}
       </select>
@@ -36,7 +36,7 @@ export function MapFilters({ filters, onChange, onSearch }: Props) {
       <select
         value={filters.grade}
         onChange={e => onChange({ ...filters, grade: e.target.value })}
-        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary/30 focus:outline-none"
+        className="px-3 py-1.5 border border-border rounded-lg text-sm bg-surface text-text focus:ring-2 focus:ring-primary/30 focus:outline-none"
       >
         {GRADE_FILTER_OPTIONS.map(o => <option key={o}>{o}</option>)}
       </select>
@@ -53,7 +53,7 @@ export function MapFilters({ filters, onChange, onSearch }: Props) {
         type="text"
         placeholder="맛집 검색..."
         onChange={e => onSearch?.(e.target.value)}
-        className="ml-auto min-w-[180px] px-3 py-1.5 border border-border rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary/30 focus:outline-none"
+        className="ml-auto min-w-[180px] px-3 py-1.5 border border-border rounded-lg text-sm bg-surface text-text focus:ring-2 focus:ring-primary/30 focus:outline-none"
       />
     </div>
   );

@@ -25,7 +25,7 @@ export function Card({
   return (
     <div
       className={[
-        'bg-white rounded-2xl border border-border shadow-[0_2px_8px_rgba(0,0,0,0.04)]',
+        'bg-surface rounded-2xl border border-border shadow-[0_2px_8px_rgba(0,0,0,0.04)]',
         hoverable ? 'hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer' : '',
         paddingStyles[padding],
         className,

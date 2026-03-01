@@ -38,7 +38,7 @@ export function LoginModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] w-full max-w-sm p-6"
+        className="bg-surface rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] w-full max-w-sm p-6"
         onClick={e => e.stopPropagation()}
       >
         <h2 className="text-xl font-sans font-bold text-text mb-1">로그인</h2>

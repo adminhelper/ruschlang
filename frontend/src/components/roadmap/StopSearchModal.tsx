@@ -87,7 +87,7 @@ export function StopSearchModal({ onSelect, onClose }: Props) {
         onClick={onClose}
         className="absolute inset-0 bg-black/50"
       />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-5">
+      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-md p-5">
         <h2 className="text-lg font-sans font-bold text-text mb-3">맛집 검색</h2>
 
         <div className="grid grid-cols-2 gap-2 mb-3">

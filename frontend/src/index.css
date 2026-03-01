@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', sans-serif;
   --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', sans-serif;
@@ -31,5 +33,19 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-sans;
+  }
+
+  .dark {
+    --color-primary: #4c9aff;
+    --color-primary-dark: #3182f6;
+    --color-primary-light: #1a2744;
+    --color-surface: #1c1e21;
+    --color-surface-dark: #141517;
+    --color-text: #e4e6ea;
+    --color-text-muted: #8b95a1;
+    --color-border: #2d3035;
+    --color-status-approved: #34d399;
+    --color-status-pending: #fbbf24;
+    --color-status-rejected: #f87171;
   }
 }

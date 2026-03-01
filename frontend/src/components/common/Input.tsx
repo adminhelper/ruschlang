@@ -18,7 +18,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={[
             'w-full px-4 py-3 bg-surface-dark border rounded-xl text-sm text-text',
             'placeholder:text-text-muted/60',
-            'focus:outline-none focus:border-primary focus:bg-white transition-colors',
+            'focus:outline-none focus:border-primary focus:bg-surface transition-colors',
             error ? 'border-red-400 bg-red-50/50' : 'border-transparent',
             className,
           ].filter(Boolean).join(' ')}

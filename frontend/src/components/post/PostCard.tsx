@@ -35,7 +35,7 @@ export const PostCard = memo(function PostCard({ post: p, onDelete, onApprove, o
   }, [p.content, p.title]);
 
   return (
-    <div className="bg-white rounded-xl border border-border p-4 shadow-sm">
+    <div className="bg-surface rounded-xl border border-border p-4 shadow-sm">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center gap-2 mb-1">

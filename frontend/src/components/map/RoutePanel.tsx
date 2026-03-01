@@ -20,7 +20,7 @@ export function RoutePanel({
   onClose,
 }: Props) {
   return (
-    <div className="mt-3 bg-white rounded-xl border border-border p-4 space-y-3">
+    <div className="mt-3 bg-surface rounded-xl border border-border p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs text-text-muted">로드맵 경로</p>

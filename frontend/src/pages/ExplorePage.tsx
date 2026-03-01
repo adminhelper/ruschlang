@@ -126,7 +126,7 @@ export function ExplorePage() {
               className={`px-3 py-1.5 rounded-full text-xs font-sans font-bold border transition-colors ${
                 badgeFilter === item.value
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-text-muted border-border hover:text-text'
+                  : 'bg-surface text-text-muted border-border hover:text-text'
               }`}
             >
               {item.label}
@@ -137,7 +137,7 @@ export function ExplorePage() {
         <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value as SortOption)}
-          className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
+          className="px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text"
         >
           <option value="latest">최신순</option>
           <option value="rating">평점순</option>

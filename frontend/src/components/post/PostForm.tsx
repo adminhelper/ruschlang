@@ -32,7 +32,7 @@ export function PostForm({ onSubmit }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-border p-4 space-y-3">
+    <form onSubmit={handleSubmit} className="bg-surface rounded-xl border border-border p-4 space-y-3">
       <h3 className="text-base font-sans font-bold text-text">글쓰기</h3>
 
       <input

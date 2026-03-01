@@ -31,7 +31,7 @@ export function Skeleton({
 
 export function CardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-border shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+    <div className="bg-surface rounded-2xl border border-border shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
       <Skeleton variant="rectangular" className="w-full h-40 rounded-none" />
       <div className="p-5 space-y-3">
         <Skeleton variant="text" className="w-3/4 h-5" />

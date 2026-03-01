@@ -341,19 +341,19 @@ export function MapPage() {
         </div>
 
         <div className="w-80 shrink-0">
-          <div className="bg-white rounded-xl border border-border p-4 space-y-3">
-            <div className="grid grid-cols-2 gap-2 bg-gray-100 rounded-lg p-1">
+          <div className="bg-surface rounded-xl border border-border p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-2 bg-surface-dark rounded-lg p-1">
               <button
                 type="button"
                 onClick={() => setSidebarTab('ranking')}
-                className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'ranking' ? 'bg-white text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
+                className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'ranking' ? 'bg-surface text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
               >
                 랭킹
               </button>
               <button
                 type="button"
                 onClick={() => setSidebarTab('roadmap')}
-                className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'roadmap' ? 'bg-white text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
+                className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'roadmap' ? 'bg-surface text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
               >
                 로드맵
               </button>

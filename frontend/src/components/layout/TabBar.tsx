@@ -12,7 +12,7 @@ export function TabBar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="bg-white border-b border-border shadow-sm" role="tablist" aria-label="메인 탐색">
+    <nav className="bg-surface border-b border-border shadow-sm" role="tablist" aria-label="메인 탐색">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex gap-1">
           {TABS.map(tab => {
