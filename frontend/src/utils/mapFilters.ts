@@ -23,7 +23,7 @@ const FOOD_KEYWORDS: Record<string, string[]> = {
   '피자': ['피자'],
 };
 
-export function inferFoodCategory(name: string, description: string, category: string): string {
+export function inferFoodCategory(name: string, description: string, category: string = ''): string {
   const text = `${name} ${description} ${category}`.toLowerCase();
   for (const [cat, keywords] of Object.entries(FOOD_KEYWORDS)) {
     if (keywords.some(kw => text.includes(kw))) return cat;
@@ -36,7 +36,7 @@ export function matchesRegion(region: string, filter: string): boolean {
   return region.includes(filter);
 }
 
-export function matchesFoodCategory(name: string, description: string, category: string, filter: string): boolean {
+export function matchesFoodCategory(name: string, description: string, category: string = '', filter: string): boolean {
   if (filter === '음식종류 전체') return true;
   return inferFoodCategory(name, description, category) === filter;
 }

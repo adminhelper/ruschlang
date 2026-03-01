@@ -9,9 +9,10 @@ interface Filters {
 interface Props {
   filters: Filters;
   onChange: (filters: Filters) => void;
+  onSearch?: (query: string) => void;
 }
 
-export function MapFilters({ filters, onChange }: Props) {
+export function MapFilters({ filters, onChange, onSearch }: Props) {
   const reset = () => onChange({ region: '지역 전체', food: '음식종류 전체', grade: '평점 전체' });
 
   return (
@@ -41,11 +42,19 @@ export function MapFilters({ filters, onChange }: Props) {
       </select>
 
       <button
+        type="button"
         onClick={reset}
         className="px-3 py-1.5 text-xs text-text-muted hover:text-text border border-border rounded-lg hover:bg-gray-50 transition-colors"
       >
         초기화
       </button>
+
+      <input
+        type="text"
+        placeholder="맛집 검색..."
+        onChange={e => onSearch?.(e.target.value)}
+        className="ml-auto min-w-[180px] px-3 py-1.5 border border-border rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary/30 focus:outline-none"
+      />
     </div>
   );
 }
