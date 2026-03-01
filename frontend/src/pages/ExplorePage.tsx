@@ -1,19 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getRestaurants, createRestaurant, deleteRestaurant, createReview } from '../api/restaurants';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { RestaurantCard } from '../components/restaurant/RestaurantCard';
 import { RestaurantForm } from '../components/restaurant/RestaurantForm';
 import type { Restaurant, RestaurantCreateRequest, ReviewCreateRequest } from '../types/restaurant';
+import { badgeByScore, calculateAverage } from '../utils/rating';
+
+type SortOption = 'latest' | 'rating' | 'name';
+type BadgeFilter = 'all' | '5star' | '4star' | '3star' | 'newbie';
+
+const BADGE_FILTERS: Array<{ value: BadgeFilter; label: string }> = [
+  { value: 'all', label: '전체' },
+  { value: '5star', label: '5스타' },
+  { value: '4star', label: '4스타' },
+  { value: '3star', label: '3스타' },
+  { value: 'newbie', label: '뉴비' },
+];
 
 export function ExplorePage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isGuest } = useAuth();
   const { showToast } = useToast();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>('latest');
+  const [badgeFilter, setBadgeFilter] = useState<BadgeFilter>('all');
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await getRestaurants();
       setRestaurants(data);
@@ -22,9 +36,36 @@ export function ExplorePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const visibleRestaurants = useMemo(() => {
+    const withRating = restaurants.map((restaurant) => {
+      const averageRating = calculateAverage(restaurant.reviews.map(review => review.rating));
+      const grade = badgeByScore(averageRating, restaurant.reviews.length);
+      return { restaurant, averageRating, grade };
+    });
+
+    const filtered = badgeFilter === 'all'
+      ? withRating
+      : withRating.filter(item => item.grade === badgeFilter);
+
+    return filtered
+      .sort((a, b) => {
+        if (sortBy === 'rating') {
+          if (b.averageRating !== a.averageRating) return b.averageRating - a.averageRating;
+          return new Date(b.restaurant.createdAt).getTime() - new Date(a.restaurant.createdAt).getTime();
+        }
+
+        if (sortBy === 'name') {
+          return a.restaurant.name.localeCompare(b.restaurant.name, 'ko');
+        }
+
+        return new Date(b.restaurant.createdAt).getTime() - new Date(a.restaurant.createdAt).getTime();
+      })
+      .map(item => item.restaurant);
+  }, [badgeFilter, restaurants, sortBy]);
 
   const handleCreate = async (data: RestaurantCreateRequest) => {
     try {
@@ -64,12 +105,42 @@ export function ExplorePage() {
         <h2 className="text-xl font-sans font-bold text-text">맛집 탐색</h2>
         {isAdmin && (
           <button
+            type="button"
             onClick={() => setShowForm(!showForm)}
             className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-sans font-bold hover:bg-primary-dark transition-colors"
           >
             {showForm ? '취소' : '+ 맛집 등록'}
           </button>
         )}
+      </div>
+
+      <div className="flex flex-col gap-3 mb-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2 flex-wrap">
+          {BADGE_FILTERS.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setBadgeFilter(item.value)}
+              className={`px-3 py-1.5 rounded-full text-xs font-sans font-bold border transition-colors ${
+                badgeFilter === item.value
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-text-muted border-border hover:text-text'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <select
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value as SortOption)}
+          className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
+        >
+          <option value="latest">최신순</option>
+          <option value="rating">평점순</option>
+          <option value="name">이름순</option>
+        </select>
       </div>
 
       {showForm && (
@@ -80,16 +151,16 @@ export function ExplorePage() {
 
       {loading ? (
         <p className="text-center text-text-muted py-8">로딩 중...</p>
-      ) : restaurants.length === 0 ? (
+      ) : visibleRestaurants.length === 0 ? (
         <p className="text-center text-text-muted py-8">등록된 맛집이 없습니다.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {restaurants.map(r => (
+          {visibleRestaurants.map(r => (
             <RestaurantCard
               key={r.id}
               restaurant={r}
               onDelete={isAdmin ? handleDelete : undefined}
-              onReview={handleReview}
+              onReview={isGuest ? undefined : handleReview}
             />
           ))}
         </div>
