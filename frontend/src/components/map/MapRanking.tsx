@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import type { Restaurant } from '../../types/restaurant';
 import { StarRating } from '../common/StarRating';
 import { RuschlangBadge } from '../common/RuschlangBadge';
@@ -8,9 +9,9 @@ interface Props {
   restaurants: Restaurant[];
 }
 
-export function MapRanking({ restaurants }: Props) {
+export const MapRanking = memo(function MapRanking({ restaurants }: Props) {
   const { isGuest } = useAuth();
-  const ranked = restaurants
+  const ranked = useMemo(() => restaurants
     .map((restaurant) => {
       const reviewCount = restaurant.reviews.length;
       const rating = calculateAverage(restaurant.reviews.map(review => review.rating));
@@ -18,7 +19,7 @@ export function MapRanking({ restaurants }: Props) {
     })
     .filter(item => item.reviewCount > 0)
     .sort((a, b) => b.rating - a.rating)
-    .slice(0, 20);
+    .slice(0, 20), [restaurants]);
 
   if (ranked.length === 0) {
     return <p className="text-sm text-text-muted">리뷰가 등록된 맛집이 없습니다.</p>;
@@ -45,4 +46,4 @@ export function MapRanking({ restaurants }: Props) {
       })}
     </div>
   );
-}
+});

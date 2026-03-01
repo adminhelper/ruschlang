@@ -63,10 +63,10 @@ function decodePolyline(encoded: string): Array<[number, number]> {
 export function MapPage() {
   const { showToast } = useToast();
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-  const restaurantMarkersRef = useRef<Array<{ restaurantId: string; marker: any; infoWindow: any }>>([]);
-  const roadmapMarkersRef = useRef<any[]>([]);
-  const routePolylineRef = useRef<any>(null);
+  const mapInstance = useRef<naver.maps.Map | null>(null);
+  const restaurantMarkersRef = useRef<Array<{ restaurantId: string; marker: naver.maps.Marker; infoWindow: naver.maps.InfoWindow }>>([]);
+  const roadmapMarkersRef = useRef<naver.maps.Marker[]>([]);
+  const routePolylineRef = useRef<naver.maps.Polyline | null>(null);
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
@@ -400,10 +400,4 @@ export function MapPage() {
       </div>
     </div>
   );
-}
-
-declare global {
-  interface Window {
-    naver: any;
-  }
 }

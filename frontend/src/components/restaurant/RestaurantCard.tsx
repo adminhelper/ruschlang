@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import type { Restaurant, ReviewCreateRequest } from '../../types/restaurant';
 import { StarRating } from '../common/StarRating';
 import { RuschlangBadge } from '../common/RuschlangBadge';
@@ -13,7 +13,7 @@ interface Props {
   onReview?: (restaurantId: string, data: ReviewCreateRequest) => void;
 }
 
-export function RestaurantCard({ restaurant: r, onDelete, onReview }: Props) {
+export const RestaurantCard = memo(function RestaurantCard({ restaurant: r, onDelete, onReview }: Props) {
   const { isGuest } = useAuth();
   const [showReviews, setShowReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -115,4 +115,4 @@ export function RestaurantCard({ restaurant: r, onDelete, onReview }: Props) {
       </div>
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import type { Post, CommentCreateRequest } from '../../types/post';
 import { StarRating } from '../common/StarRating';
 import { CommentSection } from './CommentSection';
@@ -19,7 +19,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   rejected: { label: '거절됨', color: 'bg-status-rejected text-white' },
 };
 
-export function PostCard({ post: p, onDelete, onApprove, onUpdate, onComment }: Props) {
+export const PostCard = memo(function PostCard({ post: p, onDelete, onApprove, onUpdate, onComment }: Props) {
   const { isAdmin, nickname } = useAuth();
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -155,4 +155,4 @@ export function PostCard({ post: p, onDelete, onApprove, onUpdate, onComment }: 
       )}
     </div>
   );
-}
+});

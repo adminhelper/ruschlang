@@ -149,8 +149,3 @@ export function StopSearchModal({ onSelect, onClose }: Props) {
   );
 }
 
-declare global {
-  interface Window {
-    naver: any;
-  }
-}

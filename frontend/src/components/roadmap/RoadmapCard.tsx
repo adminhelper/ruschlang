@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import type { Roadmap, RoadmapRateRequest } from '../../types/roadmap';
 import { StarRating } from '../common/StarRating';
 import { parseStops } from '../../utils/stops';
@@ -11,7 +11,7 @@ interface Props {
   onRate?: (id: string, data: RoadmapRateRequest) => void;
 }
 
-export function RoadmapCard({ roadmap: r, onEdit, onDelete, onRate }: Props) {
+export const RoadmapCard = memo(function RoadmapCard({ roadmap: r, onEdit, onDelete, onRate }: Props) {
   const stops = parseStops(r.stops);
   const [showRate, setShowRate] = useState(false);
   const [ratingVal, setRatingVal] = useState(0);
@@ -77,4 +77,4 @@ export function RoadmapCard({ roadmap: r, onEdit, onDelete, onRate }: Props) {
       )}
     </div>
   );
-}
+});

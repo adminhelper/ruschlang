@@ -9,9 +9,9 @@ interface Props {
 
 export function RestaurantForm({ onSubmit }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const miniMapInstance = useRef<any>(null);
-  const tempMarkerRef = useRef<any>(null);
-  const clickListenerRef = useRef<any>(null);
+  const miniMapInstance = useRef<naver.maps.Map | null>(null);
+  const tempMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const clickListenerRef = useRef<unknown>(null);
   const [form, setForm] = useState<RestaurantCreateRequest>({
     name: '', address: '', lat: 0, lng: 0,
     description: '', photoUrl: '',
@@ -175,10 +175,4 @@ export function RestaurantForm({ onSubmit }: Props) {
       </button>
     </form>
   );
-}
-
-declare global {
-  interface Window {
-    naver: any;
-  }
 }
