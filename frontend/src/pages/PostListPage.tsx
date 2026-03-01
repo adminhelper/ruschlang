@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getPosts, createPost, deletePost, approvePost, createComment } from '../api/posts';
+import { useState, useEffect, useCallback } from 'react';
+import { getPosts, createPost, deletePost, approvePost, createComment, updatePost } from '../api/posts';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { PostCard } from '../components/post/PostCard';
@@ -7,28 +7,28 @@ import { PostForm } from '../components/post/PostForm';
 import type { Post, PostCreateRequest, CommentCreateRequest } from '../types/post';
 
 export function PostListPage() {
-  const { isAdmin, isMember, isGuest, role, nickname } = useAuth();
+  const { isAdmin, isMember, isGuest, nickname } = useAuth();
   const { showToast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const data = await getPosts();
+      const data = isGuest ? await getPosts('approved') : await getPosts();
       setPosts(data);
     } catch (err) {
       console.error('게시글 로드 실패:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isGuest]);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleCreate = async (data: PostCreateRequest) => {
     try {
-      await createPost({ ...data, author: nickname || '익명', authorRole: role });
+      await createPost({ ...data, author: nickname || '익명' });
       showToast('게시글이 등록되었습니다', 'success');
       setShowForm(false);
       loadData();
@@ -48,10 +48,15 @@ export function PostListPage() {
     }
   };
 
-  const handleApprove = async (id: string, status: 'approved' | 'rejected') => {
+  const handleApprove = async (id: string, status: 'approved' | 'rejected' | 'pending') => {
     try {
       await approvePost(id, status);
-      showToast(status === 'approved' ? '승인되었습니다' : '거절되었습니다', 'success');
+      const statusMessage = status === 'approved'
+        ? '승인되었습니다'
+        : status === 'rejected'
+          ? '거절되었습니다'
+          : '승인이 취소되었습니다';
+      showToast(statusMessage, 'success');
       loadData();
     } catch (err) {
       showToast('처리에 실패했습니다', 'error');
@@ -68,6 +73,16 @@ export function PostListPage() {
     }
   };
 
+  const handleUpdate = async (id: string, data: { title: string; content: string }) => {
+    try {
+      await updatePost(id, data);
+      showToast('게시글이 수정되었습니다', 'success');
+      loadData();
+    } catch {
+      showToast('게시글 수정에 실패했습니다', 'error');
+    }
+  };
+
   const canCreate = isAdmin || isMember;
 
   return (
@@ -76,6 +91,7 @@ export function PostListPage() {
         <h2 className="text-xl font-sans font-bold text-text">탐방 게시판</h2>
         {canCreate && (
           <button
+            type="button"
             onClick={() => setShowForm(!showForm)}
             className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-sans font-bold hover:bg-primary-dark transition-colors"
           >
@@ -102,6 +118,7 @@ export function PostListPage() {
               post={p}
               onDelete={isAdmin ? handleDelete : undefined}
               onApprove={isAdmin ? handleApprove : undefined}
+              onUpdate={handleUpdate}
               onComment={!isGuest ? handleComment : undefined}
             />
           ))}

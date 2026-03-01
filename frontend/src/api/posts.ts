@@ -19,7 +19,7 @@ export async function deletePost(id: string): Promise<void> {
   return api.delete(`/api/posts/${id}`);
 }
 
-export async function approvePost(id: string, status: 'approved' | 'rejected'): Promise<Post> {
+export async function approvePost(id: string, status: 'approved' | 'rejected' | 'pending'): Promise<Post> {
   return api.patch<Post>(`/api/posts/${id}/approve`, { status });
 }
 
