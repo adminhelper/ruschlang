@@ -12,7 +12,7 @@ export function TabBar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="bg-white border-b border-border shadow-sm">
+    <nav className="bg-white border-b border-border shadow-sm" role="tablist" aria-label="메인 탐색">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex gap-1">
           {TABS.map(tab => {
@@ -20,6 +20,9 @@ export function TabBar() {
             return (
               <button
                 key={tab.path}
+                role="tab"
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
                 onClick={() => navigate(tab.path)}
                 className={`flex items-center gap-1.5 px-4 py-3 text-sm font-sans border-b-2 transition-colors ${
                   isActive

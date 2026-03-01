@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { Button } from './Button';
+import { Input } from './Input';
 
 interface Props {
   onClose: () => void;
@@ -34,9 +36,9 @@ export function LoginModal({ onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
+        className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] w-full max-w-sm p-6"
         onClick={e => e.stopPropagation()}
       >
         <h2 className="text-xl font-sans font-bold text-text mb-1">로그인</h2>
@@ -45,21 +47,24 @@ export function LoginModal({ onClose }: Props) {
         {/* 관리자 */}
         <div className="mb-5">
           <h3 className="text-sm font-sans font-bold text-text mb-2">👑 관리자</h3>
-          <input
-            type="password"
-            placeholder="관리자 토큰 입력"
-            value={adminToken}
-            onChange={e => setAdminToken(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}
-            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-2"
-          />
-          <button
+          <div className="mb-2">
+            <Input
+              type="password"
+              placeholder="관리자 토큰 입력"
+              value={adminToken}
+              onChange={e => setAdminToken(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}
+            />
+          </div>
+          <Button
+            variant="primary"
+            fullWidth
+            loading={loading}
+            disabled={!adminToken.trim()}
             onClick={handleAdminLogin}
-            disabled={loading || !adminToken.trim()}
-            className="w-full py-2 bg-primary text-white rounded-lg text-sm font-sans font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            {loading ? '확인 중...' : '관리자 로그인'}
-          </button>
+            관리자 로그인
+          </Button>
         </div>
 
         <hr className="border-border my-4" />
@@ -67,30 +72,29 @@ export function LoginModal({ onClose }: Props) {
         {/* 회원 */}
         <div className="mb-4">
           <h3 className="text-sm font-sans font-bold text-text mb-2">👤 회원</h3>
-          <input
-            type="text"
-            placeholder="닉네임 입력"
-            value={nickname}
-            onChange={e => setNickname(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleMemberLogin()}
-            maxLength={20}
-            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-2"
-          />
-          <button
-            onClick={handleMemberLogin}
+          <div className="mb-2">
+            <Input
+              type="text"
+              placeholder="닉네임 입력"
+              value={nickname}
+              onChange={e => setNickname(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleMemberLogin()}
+              maxLength={20}
+            />
+          </div>
+          <Button
+            variant="primary"
+            fullWidth
             disabled={!nickname.trim()}
-            className="w-full py-2 bg-emerald-500 text-white rounded-lg text-sm font-sans font-bold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+            onClick={handleMemberLogin}
           >
             회원 로그인
-          </button>
+          </Button>
         </div>
 
-        <button
-          onClick={onClose}
-          className="w-full py-2 text-text-muted text-sm hover:text-text transition-colors"
-        >
+        <Button variant="ghost" fullWidth onClick={onClose}>
           닫기
-        </button>
+        </Button>
       </div>
     </div>
   );

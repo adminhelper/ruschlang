@@ -6,7 +6,9 @@ import { RestaurantCard } from '../components/restaurant/RestaurantCard';
 import { RestaurantForm } from '../components/restaurant/RestaurantForm';
 import type { Restaurant, RestaurantCreateRequest, ReviewCreateRequest } from '../types/restaurant';
 import { badgeByScore, calculateAverage } from '../utils/rating';
-
+import { Button } from '../components/common/Button';
+import { CardSkeleton } from '../components/common/Skeleton';
+import { EmptyState } from '../components/common/EmptyState';
 type SortOption = 'latest' | 'rating' | 'name';
 type BadgeFilter = 'all' | '5star' | '4star' | '3star' | 'newbie';
 
@@ -104,13 +106,13 @@ export function ExplorePage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-sans font-bold text-text">맛집 탐색</h2>
         {isAdmin && (
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="md"
             onClick={() => setShowForm(!showForm)}
-            className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-sans font-bold hover:bg-primary-dark transition-colors"
           >
             {showForm ? '취소' : '+ 맛집 등록'}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -150,9 +152,13 @@ export function ExplorePage() {
       )}
 
       {loading ? (
-        <p className="text-center text-text-muted py-8">로딩 중...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
       ) : visibleRestaurants.length === 0 ? (
-        <p className="text-center text-text-muted py-8">등록된 맛집이 없습니다.</p>
+        <EmptyState icon="🍽️" title="등록된 맛집이 없습니다" description="첫 맛집을 등록해보세요!" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {visibleRestaurants.map(r => (
