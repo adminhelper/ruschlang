@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { Roadmap, RoadmapRateRequest } from '../../types/roadmap';
 import { StarRating } from '../common/StarRating';
 import { parseStops } from '../../utils/stops';
@@ -8,6 +8,8 @@ import type { Stop } from '../../types/roadmap';
 
 interface Props {
   roadmap: Roadmap;
+  isMapOpen?: boolean;
+  onToggleMap?: () => void;
   onEdit?: () => void;
   onDelete?: (id: string) => void;
   onRate?: (id: string, data: RoadmapRateRequest) => void;
@@ -98,7 +100,7 @@ function RoadmapInlineMap({ stops }: { stops: Stop[] }) {
           center: stops.length === 1
             ? new window.naver.maps.LatLng(stops[0].lat, stops[0].lng)
             : bounds.getCenter(),
-          zoom: 14,
+          zoom: 18,
           zoomControl: true,
           zoomControlOptions: { position: window.naver.maps.Position.TOP_RIGHT },
         });
@@ -129,7 +131,7 @@ function RoadmapInlineMap({ stops }: { stops: Stop[] }) {
             markersRef.current.forEach(() => infoWindow.close());
             infoWindow.open(map, marker);
             map.setCenter(new window.naver.maps.LatLng(stop.lat, stop.lng));
-            map.setZoom(16);
+            map.setZoom(18);
           });
 
           markersRef.current.push(marker);
@@ -220,23 +222,17 @@ function RoadmapInlineMap({ stops }: { stops: Stop[] }) {
   );
 }
 
-export const RoadmapCard = memo(function RoadmapCard({ roadmap: r, onEdit, onDelete, onRate }: Props) {
+export const RoadmapCard = memo(function RoadmapCard({ roadmap: r, isMapOpen, onToggleMap, onEdit, onDelete, onRate }: Props) {
   const stops = parseStops(r.stops);
   const [showRate, setShowRate] = useState(false);
   const [ratingVal, setRatingVal] = useState(0);
-  const [showMap, setShowMap] = useState(false);
-
-  const toggleMap = useCallback(() => {
-    if (stops.length === 0) return;
-    setShowMap(prev => !prev);
-  }, [stops.length]);
 
   return (
     <div className="bg-surface rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow">
       {/* 클릭 가능한 카드 영역 */}
       <button
         type="button"
-        onClick={toggleMap}
+        onClick={onToggleMap}
         className="w-full text-left p-4 cursor-pointer"
         disabled={stops.length === 0}
       >
@@ -268,14 +264,14 @@ export const RoadmapCard = memo(function RoadmapCard({ roadmap: r, onEdit, onDel
           <div className="flex items-center gap-1 text-xs text-text-muted">
             <span>📍 정류장 {stops.length}곳</span>
             <span className="ml-auto text-primary font-bold">
-              {showMap ? '▲ 지도 접기' : '▼ 지도 보기'}
+              {isMapOpen ? '▲ 지도 접기' : '▼ 지도 보기'}
             </span>
           </div>
         )}
       </button>
 
       {/* 인라인 지도 */}
-      {showMap && stops.length > 0 && (
+      {isMapOpen && stops.length > 0 && (
         <div className="px-4 pb-4">
           <RoadmapInlineMap stops={stops} />
         </div>

@@ -13,6 +13,7 @@ export function RoadmapListPage() {
   const [showForm, setShowForm] = useState(false);
   const [editTarget, setEditTarget] = useState<Roadmap | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openMapId, setOpenMapId] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -107,6 +108,8 @@ export function RoadmapListPage() {
             <RoadmapCard
               key={r.id}
               roadmap={r}
+              isMapOpen={openMapId === r.id}
+              onToggleMap={() => setOpenMapId(prev => prev === r.id ? null : r.id)}
               onEdit={isAdmin ? () => setEditTarget(r) : undefined}
               onDelete={isAdmin ? handleDelete : undefined}
               onRate={canCreate ? handleRate : undefined}
