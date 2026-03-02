@@ -5,9 +5,10 @@ declare namespace naver.maps {
     constructor(element: HTMLElement, options?: MapOptions);
     setCenter(latlng: LatLng): void;
     setZoom(level: number): void;
-    fitBounds(bounds: LatLngBounds): void;
+    fitBounds(bounds: LatLngBounds, padding?: { top?: number; right?: number; bottom?: number; left?: number }): void;
     getCenter(): LatLng;
     getZoom(): number;
+    destroy(): void;
   }
 
   interface MapOptions {
@@ -15,6 +16,7 @@ declare namespace naver.maps {
     zoom?: number;
     mapTypeControl?: boolean;
     zoomControl?: boolean;
+    zoomControlOptions?: { position?: number };
   }
 
   class LatLng {
@@ -26,6 +28,7 @@ declare namespace naver.maps {
   class LatLngBounds {
     constructor();
     extend(latlng: LatLng): void;
+    getCenter(): LatLng;
   }
 
   class Point {
@@ -92,6 +95,8 @@ declare namespace naver.maps {
     const Status: { OK: string };
     function geocode(options: { query: string }, callback: (status: string, response: unknown) => void): void;
   }
+
+  const Position: Record<string, number>;
 }
 
 interface Window {
