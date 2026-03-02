@@ -32,6 +32,10 @@ declare namespace naver.maps {
     constructor(x: number, y: number);
   }
 
+  class Size {
+    constructor(width: number, height: number);
+  }
+
   class Marker {
     constructor(options: MarkerOptions);
     setMap(map: Map | null): void;
@@ -47,6 +51,7 @@ declare namespace naver.maps {
 
   interface MarkerIcon {
     content: string;
+    size?: Size;
     anchor?: Point;
   }
 

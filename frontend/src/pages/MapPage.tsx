@@ -143,6 +143,33 @@ export function MapPage() {
     };
   }, [showToast]);
 
+  const getMarkerIcon = (grade: string) => {
+    const colorMap: Record<string, { bg: string; border: string }> = {
+      '5star': { bg: '#3182f6', border: '#1b64da' },
+      '4star': { bg: '#34c759', border: '#2aa048' },
+      '3star': { bg: '#ff9f0a', border: '#e08900' },
+      'newbie': { bg: '#8b95a1', border: '#6b7684' },
+    };
+    const { bg, border } = colorMap[grade] || colorMap['newbie'];
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
+      <defs>
+        <filter id="s" x="-10%" y="-5%" width="120%" height="115%">
+          <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.25"/>
+        </filter>
+      </defs>
+      <path d="M18 44 C18 44 3 28 3 16 A15 15 0 0 1 33 16 C33 28 18 44 18 44Z" fill="${bg}" stroke="${border}" stroke-width="1.5" filter="url(#s)"/>
+      <circle cx="18" cy="16" r="10" fill="white" opacity="0.95"/>
+      <text x="18" y="20.5" text-anchor="middle" font-family="Pretendard,sans-serif" font-size="13" font-weight="700" fill="${bg}">루</text>
+    </svg>`;
+
+    return {
+      content: svg,
+      size: new window.naver.maps.Size(36, 46),
+      anchor: new window.naver.maps.Point(18, 44),
+    };
+  };
+
   useEffect(() => {
     if (!mapLoaded || !mapInstance.current || !window.naver) return;
 
@@ -157,10 +184,12 @@ export function MapPage() {
       const reviewCount = r.reviews?.length ?? 0;
       const rating = calculateAverage((r.reviews || []).map(review => review.rating));
 
+      const grade = badgeByScore(rating, reviewCount);
       const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(r.lat, r.lng),
         map: mapInstance.current,
         title: r.name,
+        icon: getMarkerIcon(grade),
       });
 
       const infoWindow = new window.naver.maps.InfoWindow({
