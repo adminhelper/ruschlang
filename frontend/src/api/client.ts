@@ -38,7 +38,7 @@ function getAuthHeaders(): Record<string, string> {
       const ttl = 12 * 60 * 60 * 1000;
       if (Date.now() - session.loginAt < ttl) {
         headers['x-user-role'] = 'member';
-        headers['x-user-nickname'] = session.nickname;
+        headers['x-user-nickname'] = encodeURIComponent(session.nickname);
         return headers;
       }
       localStorage.removeItem('ruschlang:member:session');
