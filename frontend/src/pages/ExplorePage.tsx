@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getRestaurants, createRestaurant, deleteRestaurant, createReview } from '../api/restaurants';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { RestaurantCard } from '../components/restaurant/RestaurantCard';
+import { RestaurantGalleryCard } from '../components/restaurant/RestaurantGalleryCard';
+import { RestaurantListItem } from '../components/restaurant/RestaurantListItem';
 import { RestaurantForm } from '../components/restaurant/RestaurantForm';
 import type { Restaurant, RestaurantCreateRequest, ReviewCreateRequest } from '../types/restaurant';
 import { badgeByScore, calculateAverage } from '../utils/rating';
@@ -11,6 +12,7 @@ import { CardSkeleton } from '../components/common/Skeleton';
 import { EmptyState } from '../components/common/EmptyState';
 type SortOption = 'latest' | 'rating' | 'name';
 type BadgeFilter = 'all' | '5star' | '4star' | '3star' | 'newbie';
+type ViewMode = 'gallery' | 'list';
 
 const BADGE_FILTERS: Array<{ value: BadgeFilter; label: string }> = [
   { value: 'all', label: '전체' },
@@ -28,6 +30,7 @@ export function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>('latest');
   const [badgeFilter, setBadgeFilter] = useState<BadgeFilter>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('gallery');
 
   const loadData = useCallback(async () => {
     try {
@@ -134,15 +137,56 @@ export function ExplorePage() {
           ))}
         </div>
 
-        <select
-          value={sortBy}
-          onChange={e => setSortBy(e.target.value as SortOption)}
-          className="px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text"
-        >
-          <option value="latest">최신순</option>
-          <option value="rating">평점순</option>
-          <option value="name">이름순</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as SortOption)}
+            className="px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text"
+          >
+            <option value="latest">최신순</option>
+            <option value="rating">평점순</option>
+            <option value="name">이름순</option>
+          </select>
+
+          {/* 뷰 모드 토글 */}
+          <div className="flex bg-surface-dark border border-border rounded-lg overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setViewMode('gallery')}
+              className={`px-2.5 py-2 text-sm transition-colors ${
+                viewMode === 'gallery'
+                  ? 'bg-primary text-white'
+                  : 'text-text-muted hover:text-text'
+              }`}
+              aria-label="갤러리 보기"
+              title="갤러리 보기"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <rect x="1" y="1" width="6" height="6" rx="1" />
+                <rect x="9" y="1" width="6" height="6" rx="1" />
+                <rect x="1" y="9" width="6" height="6" rx="1" />
+                <rect x="9" y="9" width="6" height="6" rx="1" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`px-2.5 py-2 text-sm transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-primary text-white'
+                  : 'text-text-muted hover:text-text'
+              }`}
+              aria-label="리스트 보기"
+              title="리스트 보기"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <rect x="1" y="1" width="14" height="3" rx="1" />
+                <rect x="1" y="6" width="14" height="3" rx="1" />
+                <rect x="1" y="11" width="14" height="3" rx="1" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       {showForm && (
@@ -159,10 +203,16 @@ export function ExplorePage() {
         </div>
       ) : visibleRestaurants.length === 0 ? (
         <EmptyState icon="🍽️" title="등록된 맛집이 없습니다" description="첫 맛집을 등록해보세요!" />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      ) : viewMode === 'gallery' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {visibleRestaurants.map(r => (
-            <RestaurantCard
+            <RestaurantGalleryCard key={r.id} restaurant={r} />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {visibleRestaurants.map(r => (
+            <RestaurantListItem
               key={r.id}
               restaurant={r}
               onDelete={isAdmin ? handleDelete : undefined}
