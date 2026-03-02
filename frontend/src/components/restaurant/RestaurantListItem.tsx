@@ -21,9 +21,9 @@ export const RestaurantListItem = memo(function RestaurantListItem({ restaurant:
   const averageRating = calculateAverage(ratings);
   const reviewCount = r.reviews.length;
   const grade = badgeByScore(averageRating, reviewCount);
-  const displayName = isGuest ? '루퍼스 맛집' : r.name;
-  const displayAddress = isGuest ? '서울 지도 탐방 후 공개 예정' : r.address;
-  const displayDescription = isGuest ? '관리자 승인 후 상세 내용이 공개됩니다' : r.description;
+  const displayName = r.name;
+  const displayAddress = r.address;
+  const displayDescription = r.description;
 
   return (
     <div className="bg-surface rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -35,9 +35,7 @@ export const RestaurantListItem = memo(function RestaurantListItem({ restaurant:
       >
         {/* 큰 썸네일 */}
         <div className="w-[120px] h-[120px] shrink-0 rounded-lg overflow-hidden bg-gray-100">
-          {isGuest ? (
-            <div className="w-full h-full flex items-center justify-center text-4xl">🍽️</div>
-          ) : r.photoUrl ? (
+          {r.photoUrl ? (
             <img src={r.photoUrl} alt={r.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl text-text-muted">🍽️</div>
@@ -109,7 +107,7 @@ export const RestaurantListItem = memo(function RestaurantListItem({ restaurant:
               {r.reviews.map(review => (
                 <div key={review.id} className="p-2.5 bg-surface-dark rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-text">{review.name}</span>
+                    <span className="text-xs font-bold text-text">{review.generation ? `${review.generation}기 ` : ''}{review.name}</span>
                     <StarRating rating={review.rating} size="sm" />
                     <span className="text-xs text-text-muted ml-auto">{formatRelativeDate(review.createdAt)}</span>
                   </div>

@@ -2,28 +2,24 @@ import { memo } from 'react';
 import type { Restaurant } from '../../types/restaurant';
 import { RuschlangBadge } from '../common/RuschlangBadge';
 import { badgeByScore, calculateAverage } from '../../utils/rating';
-import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
   restaurant: Restaurant;
 }
 
 export const RestaurantGalleryCard = memo(function RestaurantGalleryCard({ restaurant: r }: Props) {
-  const { isGuest } = useAuth();
   const ratings = r.reviews.map(review => review.rating);
   const averageRating = calculateAverage(ratings);
   const reviewCount = r.reviews.length;
   const grade = badgeByScore(averageRating, reviewCount);
-  const displayName = isGuest ? '루퍼스 맛집' : r.name;
-  const displayAddress = isGuest ? '서울 지도 탐방 후 공개 예정' : r.address;
+  const displayName = r.name;
+  const displayAddress = r.address;
 
   return (
     <div className="bg-surface rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group">
       {/* 사진 영역 — 크게 */}
       <div className="relative w-full h-48 bg-gray-100 overflow-hidden">
-        {isGuest ? (
-          <div className="w-full h-full flex items-center justify-center text-5xl">🍽️</div>
-        ) : r.photoUrl ? (
+        {r.photoUrl ? (
           <img
             src={r.photoUrl}
             alt={r.name}
