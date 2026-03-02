@@ -85,6 +85,25 @@ export function MapPage() {
     return parseStops(activeRoadmap.stops);
   }, [activeRoadmap]);
 
+  const resetMapView = () => {
+    if (!mapInstance.current || !window.naver) return;
+    // InfoWindow 닫기
+    restaurantMarkersRef.current.forEach(({ infoWindow }) => infoWindow.close());
+    // 로드맵 마커 제거
+    roadmapMarkersRef.current.forEach((m) => m.setMap(null));
+    roadmapMarkersRef.current = [];
+    // 경로 폴리라인 제거
+    if (routePolylineRef.current) {
+      routePolylineRef.current.setMap(null);
+      routePolylineRef.current = null;
+    }
+    setActiveRoadmap(null);
+    setRouteSummary(null);
+    // 초기 뷰로 복원
+    mapInstance.current.setCenter(new window.naver.maps.LatLng(37.5665, 126.978));
+    mapInstance.current.setZoom(12);
+  };
+
   useEffect(() => {
     getRestaurants().then(setRestaurants).catch(() => {
       showToast('맛집 데이터를 불러오지 못했습니다', 'error');
@@ -381,14 +400,14 @@ export function MapPage() {
             <div className="grid grid-cols-2 gap-2 bg-surface-dark rounded-lg p-1">
               <button
                 type="button"
-                onClick={() => setSidebarTab('ranking')}
+                onClick={() => { setSidebarTab('ranking'); resetMapView(); }}
                 className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'ranking' ? 'bg-surface text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
               >
                 랭킹
               </button>
               <button
                 type="button"
-                onClick={() => setSidebarTab('roadmap')}
+                onClick={() => { setSidebarTab('roadmap'); resetMapView(); }}
                 className={`py-1.5 text-sm rounded-md transition-colors ${sidebarTab === 'roadmap' ? 'bg-surface text-text font-bold shadow-sm' : 'text-text-muted hover:text-text'}`}
               >
                 로드맵
