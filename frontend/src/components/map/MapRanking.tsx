@@ -29,6 +29,9 @@ export const MapRanking = memo(function MapRanking({ restaurants }: Props) {
     <div className="space-y-3 max-h-[400px] overflow-y-auto">
       {ranked.map(({ restaurant: r, rating, reviewCount }, i) => {
         const grade = badgeByScore(rating, reviewCount);
+        const reviewers = isGuest
+          ? []
+          : [...new Set(r.reviews.map(rv => rv.name).filter(Boolean))];
         return (
           <div key={r.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
             <span className="text-lg font-sans font-bold text-primary min-w-[24px]">{i + 1}</span>
@@ -38,8 +41,15 @@ export const MapRanking = memo(function MapRanking({ restaurants }: Props) {
                 <RuschlangBadge grade={grade} />
               </div>
               <p className="text-xs text-text-muted truncate">{isGuest ? '서울 지도 탐방 후 공개 예정' : r.address}</p>
-              <StarRating rating={rating} size="sm" />
-              <span className="text-xs text-text-muted ml-1">({reviewCount})</span>
+              <div className="flex items-center">
+                <StarRating rating={rating} size="sm" />
+                <span className="text-xs text-text-muted ml-1">({reviewCount})</span>
+              </div>
+              {reviewers.length > 0 && (
+                <p className="text-[11px] text-text-muted mt-0.5 truncate">
+                  제보: {reviewers.join(', ')}
+                </p>
+              )}
             </div>
           </div>
         );
