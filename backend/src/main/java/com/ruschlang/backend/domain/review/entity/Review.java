@@ -31,6 +31,9 @@ public class Review {
     @Column(name = "reviewer_name", nullable = false, length = 80)
     private String reviewerName;
 
+    @Column(name = "generation")
+    private Integer generation;
+
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
 
@@ -56,9 +59,10 @@ public class Review {
     }
 
     @Builder
-    public Review(Restaurant restaurant, String reviewerName, BigDecimal rating, String note, String photoUrl) {
+    public Review(Restaurant restaurant, String reviewerName, Integer generation, BigDecimal rating, String note, String photoUrl) {
         this.restaurant = restaurant;
         this.reviewerName = reviewerName;
+        this.generation = generation;
         this.rating = rating;
         this.note = note;
         this.photoUrl = photoUrl;

@@ -15,11 +15,12 @@ export function ReviewForm({ onSubmit, onCancel }: Props) {
   const [note, setNote] = useState('');
   const [name, setName] = useState(nickname || '');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [generation, setGeneration] = useState<string>('');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (rating === 0) return;
-    onSubmit({ name: name || '익명', rating, note, photoUrl });
+    onSubmit({ name: name || '익명', generation: generation ? Number(generation) : undefined, rating, note, photoUrl });
   };
 
   const handlePhotoChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -40,8 +41,14 @@ export function ReviewForm({ onSubmit, onCancel }: Props) {
         <input
           type="text" placeholder="이름" value={name}
           onChange={e => setName(e.target.value)}
-          className="px-2 py-1 border border-border rounded text-xs w-24"
+          className="px-2 py-1 border border-border rounded text-xs w-20"
           maxLength={20}
+        />
+        <input
+          type="number" placeholder="기수" value={generation}
+          onChange={e => setGeneration(e.target.value)}
+          className="px-2 py-1 border border-border rounded text-xs w-14"
+          min={1} max={99}
         />
         <StarRating rating={rating} editable onChange={setRating} size="md" />
       </div>

@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   id CHAR(36) NOT NULL,
   restaurant_id CHAR(36) NOT NULL,
   reviewer_name VARCHAR(80) NOT NULL DEFAULT '익명',
+  generation INT NULL,
   rating DECIMAL(2,1) NOT NULL,
   note VARCHAR(300) NOT NULL,
   photo_url LONGTEXT NULL,

@@ -44,6 +44,7 @@ public class ReviewService {
         Review review = new Review(
             restaurant,
             sanitizedReviewerName,
+            request.generation(),
             request.rating(),
             sanitizedNote,
             request.photoUrl()

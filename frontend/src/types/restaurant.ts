@@ -15,6 +15,7 @@ export interface Review {
   id: string;
   restaurantId: string;
   name: string;
+  generation?: number;
   rating: number;
   note: string;
   photoUrl: string;
@@ -32,6 +33,7 @@ export interface RestaurantCreateRequest {
 
 export interface ReviewCreateRequest {
   name: string;
+  generation?: number;
   rating: number;
   note: string;
   photoUrl: string;

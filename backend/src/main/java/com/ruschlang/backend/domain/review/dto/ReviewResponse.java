@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record ReviewResponse(
     String id,
     String name,
+    Integer generation,
     double rating,
     String note,
     String photoUrl,
@@ -16,6 +17,7 @@ public record ReviewResponse(
         return new ReviewResponse(
             entity.getId(),
             entity.getReviewerName(),
+            entity.getGeneration(),
             entity.getRating().doubleValue(),
             entity.getNote(),
             entity.getPhotoUrl() != null ? entity.getPhotoUrl() : "",
