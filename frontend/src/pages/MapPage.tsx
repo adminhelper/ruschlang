@@ -67,6 +67,7 @@ export function MapPage() {
   const restaurantMarkersRef = useRef<Array<{ restaurantId: string; marker: naver.maps.Marker; infoWindow: naver.maps.InfoWindow }>>([]);
   const roadmapMarkersRef = useRef<naver.maps.Marker[]>([]);
   const routePolylineRef = useRef<naver.maps.Polyline | null>(null);
+  const userLocationRef = useRef<{ lat: number; lng: number }>({ lat: 37.5665, lng: 126.978 });
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
@@ -99,9 +100,10 @@ export function MapPage() {
     }
     setActiveRoadmap(null);
     setRouteSummary(null);
-    // 초기 뷰로 복원
-    mapInstance.current.setCenter(new window.naver.maps.LatLng(37.5665, 126.978));
-    mapInstance.current.setZoom(12);
+    // 현재 위치 기반으로 복원
+    const loc = userLocationRef.current;
+    mapInstance.current.setCenter(new window.naver.maps.LatLng(loc.lat, loc.lng));
+    mapInstance.current.setZoom(14);
   };
 
   useEffect(() => {
@@ -140,14 +142,28 @@ export function MapPage() {
         script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${config.clientId}&submodules=geocoder`;
         script.onload = () => {
           if (cancelled || !mapRef.current || !window.naver) return;
-          const map = new window.naver.maps.Map(mapRef.current, {
-            center: new window.naver.maps.LatLng(37.5665, 126.978),
-            zoom: 12,
-            mapTypeControl: true,
-            zoomControl: true,
-          });
-          mapInstance.current = map;
-          setMapLoaded(true);
+          const fallback = { lat: 37.5665, lng: 126.978 };
+          const createMap = (lat: number, lng: number) => {
+            if (cancelled || !mapRef.current) return;
+            userLocationRef.current = { lat, lng };
+            const map = new window.naver.maps.Map(mapRef.current, {
+              center: new window.naver.maps.LatLng(lat, lng),
+              zoom: 14,
+              mapTypeControl: true,
+              zoomControl: true,
+            });
+            mapInstance.current = map;
+            setMapLoaded(true);
+          };
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => createMap(pos.coords.latitude, pos.coords.longitude),
+              () => createMap(fallback.lat, fallback.lng),
+              { enableHighAccuracy: true, timeout: 5000 },
+            );
+          } else {
+            createMap(fallback.lat, fallback.lng);
+          }
         };
         document.head.appendChild(script);
       } catch {
