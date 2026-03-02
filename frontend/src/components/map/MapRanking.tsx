@@ -19,7 +19,7 @@ export const MapRanking = memo(function MapRanking({ restaurants }: Props) {
     })
     .filter(item => item.reviewCount > 0)
     .sort((a, b) => b.rating - a.rating)
-    .slice(0, 20), [restaurants]);
+    .slice(0, 10), [restaurants]);
 
   if (ranked.length === 0) {
     return <p className="text-sm text-text-muted">리뷰가 등록된 맛집이 없습니다.</p>;

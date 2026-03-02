@@ -16,7 +16,8 @@ import type { Roadmap } from '../types/roadmap';
 import type { Restaurant } from '../types/restaurant';
 import { parseStops } from '../utils/stops';
 import { matchesFoodCategory, matchesGradeFilter, matchesRegion } from '../utils/mapFilters';
-import { badgeByScore, calculateAverage } from '../utils/rating';
+import { badgeByScore, calculateAverage, gradeLabel } from '../utils/rating';
+import type { RuschlangGrade } from '../types/auth';
 
 type SidebarTab = 'ranking' | 'roadmap';
 type RouteMode = 'foot' | 'car';
@@ -187,21 +188,68 @@ export function MapPage() {
     });
     restaurantMarkersRef.current = [];
 
+    // 랭킹 계산 (평점순 정렬, 리뷰 있는 것만)
+    const rankMap = new Map<string, { rank: number; grade: RuschlangGrade; rating: number; reviewCount: number }>();
+    const ranked = filteredRestaurants
+      .map((r) => {
+        const reviewCount = r.reviews?.length ?? 0;
+        const rating = calculateAverage((r.reviews || []).map(review => review.rating));
+        return { id: r.id, reviewCount, rating };
+      })
+      .filter(item => item.reviewCount > 0)
+      .sort((a, b) => b.rating - a.rating);
+
+    ranked.forEach((item, i) => {
+      const grade = badgeByScore(item.rating, item.reviewCount);
+      rankMap.set(item.id, { rank: i + 1, grade, rating: item.rating, reviewCount: item.reviewCount });
+    });
+
+    const gradeColorMap: Record<string, string> = {
+      '5star': '#3182f6',
+      '4star': '#34c759',
+      '3star': '#ff9f0a',
+      'newbie': '#8b95a1',
+    };
+
     filteredRestaurants.forEach((r) => {
       if (!r.lat || !r.lng) return;
 
-      const reviewCount = r.reviews?.length ?? 0;
-      const rating = calculateAverage((r.reviews || []).map(review => review.rating));
+      const info = rankMap.get(r.id);
+      const reviewCount = info?.reviewCount ?? (r.reviews?.length ?? 0);
+      const rating = info?.rating ?? calculateAverage((r.reviews || []).map(review => review.rating));
+      const grade = info?.grade ?? badgeByScore(rating, reviewCount);
+      const rank = info?.rank;
+      const bg = gradeColorMap[grade] || gradeColorMap['newbie'];
+
+      // 랭킹이 있으면 순위+등급 마커, 없으면 심플 마커
+      const iconContent = rank
+        ? `<div style="position:relative;width:36px;height:44px">
+            <div style="width:36px;height:36px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)">
+              <span style="color:white;font-size:14px;font-weight:800;font-family:Pretendard,sans-serif">${rank}</span>
+            </div>
+            <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:${bg};white-space:nowrap;text-shadow:0 0 3px white,0 0 3px white,0 0 3px white">${gradeLabel(grade)}</div>
+          </div>`
+        : `<div style="width:28px;height:28px;border-radius:50%;background:#8b95a1;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.2)">
+            <span style="color:white;font-size:11px;font-weight:700;font-family:Pretendard,sans-serif">N</span>
+          </div>`;
 
       const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(r.lat, r.lng),
         map: mapInstance.current,
         title: r.name,
+        icon: {
+          content: iconContent,
+          anchor: rank
+            ? new window.naver.maps.Point(18, 36)
+            : new window.naver.maps.Point(14, 14),
+        },
       });
 
+      const rankBadge = rank ? `<span style="display:inline-block;padding:2px 8px;background:${bg};color:white;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:6px">${rank}위 · ${gradeLabel(grade)}</span>` : '';
       const infoWindow = new window.naver.maps.InfoWindow({
         content: `<div style="padding:14px;font-family:Pretendard,sans-serif;min-width:200px;max-width:280px">
-          <strong style="font-size:15px;color:#191f28">${r.name}</strong>
+          ${rankBadge}
+          <strong style="font-size:15px;color:#191f28;display:block">${r.name}</strong>
           <p style="font-size:12px;color:#8b95a1;margin:4px 0 6px">${r.address}</p>
           <div style="display:flex;align-items:center;gap:4px">
             <span style="color:#f59e0b;font-size:14px">★</span>
